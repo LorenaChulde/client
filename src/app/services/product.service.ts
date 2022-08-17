@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from "rxjs/operators";
 import { CreateProductDto, ProductsModel, UpdateProductDto } from '../models/products.model';
 
 @Injectable({
@@ -12,11 +13,12 @@ export class ProductService {
   constructor(private httpClient: HttpClient) { }
 
   getAll():Observable<ProductsModel[]>{
-    return this.httpClient.get<ProductsModel[]>(this.API_URL);
+    const url = this.API_URL;
+    return this.httpClient.get<ProductsModel[]>(url);
   }
 
   getOne(id: ProductsModel['id']):Observable<ProductsModel> {
-    const url = '${this.API_URL}/${id}';
+    const url = `${this.API_URL}/${id}`;
     return this.httpClient.get<ProductsModel>(url);
   }
   store(product: CreateProductDto):Observable<ProductsModel> {
@@ -30,7 +32,7 @@ export class ProductService {
       ]
     }
 
-    const url = '${this.API_URL}';
+    const url = `${this.API_URL}`;
     return this.httpClient.post<ProductsModel>(url, product);
   }
   update(id: ProductsModel['id'], product: UpdateProductDto):Observable<ProductsModel> {
@@ -44,11 +46,17 @@ export class ProductService {
       ]
     }
 
-    const url = '${this.API_URL}/${id}';
+    const url = `${this.API_URL}/${id}`;
     return this.httpClient.put<ProductsModel>(url, product);
   }
-  destroy(id: ProductsModel['id']):Observable<ProductsModel> {
-    const url = '${this.API_URL}/${id}';
-    return this.httpClient.delete<ProductsModel>(url);
+  
+  destroy(id: ProductsModel['id']):Observable<any> {
+    const url = `${this.API_URL}/${id}`;
+    return this.httpClient.delete<any>(url).pipe(
+      map((response: {rta:boolean}) => {
+        return response.rta;
+      })
+    );
   }
+
 }

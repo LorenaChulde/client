@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductsModel } from '../models/products.model';
-import  { HttpClient} from '@angular/common/http';
+//import id from 'date-fns/locale/id';
+import { ProductsModel, CreateProductDto, UpdateProductDto } from '../models/products.model';
 import { ProductService } from '../services/product.service';
 //import { format } from 'date-fns';
 //import { jsPDF } from "jspdf";
@@ -11,18 +11,20 @@ import { ProductService } from '../services/product.service';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
+  products:ProductsModel[]=[];
   
   constructor(private productService:ProductService) {
-
+    
   }
 
   ngOnInit(): void {
-    //this.getProducts();
+    this.getProducts();
   }
 
   getProducts(){
     this.productService.getAll().subscribe(
       response => {
+        this.products = response;
         console.log(response);
       }
     )
@@ -63,19 +65,20 @@ export class ProductsComponent implements OnInit {
       ]
     }
 
-    this.productService.update(1, data).subscribe(
+    this.productService.update(89, data).subscribe(
       response => {
         console.log(response);
       }
     )
   }
-  deleteProduct(){
-    const url = 'https://api.escuelajs.co/api/v1/products/203';
-    this.productService.destroy(1).subscribe(
+  deleteProduct(id: ProductsModel['id']){
+    this.productService.destroy(id).subscribe(
       response => {
+        //this.products = response;
+        this.products = this.products.filter(product => product.id != id );
         console.log(response);
       }
-    )
+    );
   }
 
 }
